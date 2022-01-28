@@ -1,0 +1,25 @@
+body {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 13px;
+  padding: 30px;
+  background: #f7f7f7;
+}
+
+.axis line {
+  fill: none;
+  stroke: #ddd;
+}
+
+.axis text {
+  font-size: 13px;
+  fill: #888;
+}
+
+.axis-title {
+  font-size: 13px;
+  fill: #525252;
+}
+
+.y-axis .tick line {
+  display: none;
+}
