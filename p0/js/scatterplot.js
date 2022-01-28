@@ -6,7 +6,7 @@ class Scatterplot {
       parentElement: _config.parentElement,
       containerWidth: _config.containerWidth || 500,
       containerHeight: _config.containerHeight || 250,
-      margin: _config.margin || { top: 25, right: 50, bottom: 20, left: 50 }
+      margin: _config.margin || { top: 25, right: 50, bottom: 20, left: 60 }
     };
     this.data = _data;
     this.initVis();
@@ -117,7 +117,7 @@ class Scatterplot {
       .attr("fill", "darkblue")
       .attr("opacity", "0.3");
 
-    // Compute mean value for each trial
+    // Compute the mean for each trial
     let mean = vis.data.reduce((result, item) => {
       result[item.trial] = result[item.trial] || [];
       result[item.trial].push(item);
@@ -142,7 +142,8 @@ class Scatterplot {
       .append('text')
         .text(d => d.mean)
         .attr('class', 'custom-paragraph')
-        .attr("y", (d) =>  (+d.trial - 0.4) * vis.yScale.bandwidth())
+        // 4 is the half of the point's radius
+        .attr("y", (d) => (vis.yScale(vis.yValue(d)) + vis.yScale.bandwidth() / 2 + 4))
         .attr("x", vis.width + vis.config.margin.right / 3)
         .attr("fill", "#525252")
 
