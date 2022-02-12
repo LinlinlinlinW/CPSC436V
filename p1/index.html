@@ -11,7 +11,15 @@
 
     <div class="container">
         <h1>The Cost of Natural Disasters</h1>
+        <ul class="legend">
+            <li class="legend-btn inactive" data-category="winter-storm-freeze"><span class="legend-symbol circle"></span>Winter storms, freezing</li>
+            <li class="legend-btn inactive" data-category="drought-wildfire"><span class="legend-symbol circle"></span>Drought and wildfire</li>
+            <li class="legend-btn inactive" data-category="flooding"><span class="legend-symbol circle"></span>Flooding</li>
+            <li class="legend-btn inactive" data-category="tropical-cyclone"><span class="legend-symbol circle"></span>Tropical cyclones</li>
+            <li class="legend-btn inactive" data-category="severe-storm"><span class="legend-symbol circle"></span>Severe storms</li>
+        </ul>
         <div id="vis"></div>
+        <div id="tooltip"></div>
     </div>
     
     <script src="js/d3.v6.min.js"></script>
