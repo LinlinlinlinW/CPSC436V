@@ -1,1 +1,100 @@
-/* Todo: add styles */
+	/* Todo: add styles */
+	#scatter-plot, #bar-chart,#lexis-chart {
+		border-radius: 5px;
+		border-color: rgb(190, 190, 190);
+		border-style: solid;
+		padding: 10px;
+		margin: 10px;
+	}
+
+	/* styles in barchart */
+	.bar:hover {
+		stroke: rgb(73, 73, 73);
+		cursor: pointer;
+	}
+	.bar {
+		fill: #aeaeca;
+	}
+	.bar.active {
+		fill: #676477;
+	}
+
+	/* Tooltip */
+	#tooltip, #tooltip-lexischart {
+		position: absolute;
+		display: none;
+		background: #fff;
+		box-shadow: 3px 3px 3px 0px rgb(92 92 92 / 0.5);
+		border: 1px solid #ddd;
+		font-size: 12px;
+		font-weight: 500;
+		padding: 8px;
+		min-width: 160px;
+		color: #333;
+	}
+	.tooltip-title {
+		color: #000;
+		font-size: 14px;
+		font-weight: 600;
+	}
+	#tooltip ul {
+		margin: 5px 0 0 0;
+		padding-left: 20px;
+	}
+
+	.arrow:hover {
+		stroke-width: 4;
+	}
+
+	/* scatter plot */
+	.point.active {
+		opacity: 0.7;
+		cursor: pointer;
+	}
+	.point.selected {
+		fill: #f5b342;
+		opacity: 0.93;
+		stroke: #000;
+	}
+	.point.inactive {
+		opacity: 0.15;
+		fill: #676477;
+		stroke: none;
+		pointer-events: none;
+	}
+	.point {
+		opacity: 0.7;
+		fill: #676477;
+		cursor: pointer;
+	}
+	.point:hover {
+		stroke: #000;
+		stroke-width: 2px;
+		fill:rgb(29, 29, 29)
+	}
+
+	/* style for main page */
+	h1 {
+		font-family: 'Castoro', serif;
+		font-style: italic;
+		font-size: 2rem;
+		word-spacing: 0.15em;
+		padding-left: 10px;
+	}
+
+	#filter {
+		padding-left: 10px;
+	}
+
+	body {
+		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+		font-weight: 500;
+		font-size: 14px;
+		padding: 30px;
+		background: #f7f7f7;
+	}
+
+	line {
+		color: rgb(190, 190, 190);
+		opacity: 1;
+	}

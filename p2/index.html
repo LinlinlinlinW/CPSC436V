@@ -8,17 +8,26 @@
 <body>
     <h1>Political Leaders</h1>
 
-    Filter Countries: 
-    <select id="country-selector">
-        <option value="oecd">OECD</option>
-        <option value="eu27">EU27</option>
-        <option value="brics">BRICS</option>
-        <option value="gseven">G7</option>
-        <option value="gtwenty">G20 (without EU)</option>
-    </select>
+    <div id = "filter">
+        Filter Countries: 
+        <select id="country-selector">
+            <option value="oecd">OECD</option>
+            <option value="eu27">EU27</option>
+            <option value="brics">BRICS</option>
+            <option value="gseven">G7</option>
+            <option value="gtwenty">G20 (without EU)</option>
+        </select>
+    </div>
     
     <!-- todo: add visualizations -->
-    
+    <div>
+        <svg id="lexis-chart"></svg>
+        <svg id="bar-chart"></svg>
+        <svg id="scatter-plot"></svg>
+    </div>
+
+    <div id = "tooltip"> </div>
+
     <script src="js/d3.v6.min.js"></script>
     <script src="js/lexisChart.js"></script>
     <script src="js/barChart.js"></script>
