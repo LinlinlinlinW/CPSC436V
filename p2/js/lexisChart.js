@@ -164,8 +164,6 @@ class LexisChart {
 		// Todo: Bind data to visual elements (enter-update-exit or join)
 		let vis = this;
 
-		console.log(vis.selectedLeader)
-
 		const arrows = vis.chart
 			.selectAll(".arrow")
 			.data(vis.filteredData, (d) => d.id)
