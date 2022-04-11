@@ -8,7 +8,7 @@ Bolin Wang: [linkedin](https://www.linkedin.com/in/bolinwang227/)\
 feel free to contact us 😀
 
 ## Overview
-![thumbnail](readmeImgs\overview.png?raw=true "Title")
+![overview](https://github.com/LinlinlinlinW/CPSC436V/blob/main/final_project/overview.png?raw=true "Title")
 
 Safety is one of the most important factors to consider when moving into a new place. If we can understand the composition of crime in different areas, it is possible to respond to crime in a more targeted manner, thus enhancing security. To achieve this, we propose building a data visualisation that visually allows relevant government officials (i.e., police) and ordinary people to explore crime datasets. Our app will show the overall distribution of crime in Vancouver and enable users to analyse and compare the trend among several neighbourhoods by filtering the crime type, year, and neighbourhood, as well as daytime and nighttime.
 
@@ -110,13 +110,13 @@ We also do data aggregation in the code. Since we have a **year slider** and a *
 ### Views
 
 - **Interactive legend**\
-![legend](readmeImgs\legend.png?raw=true)
+![legend](https://github.com/LinlinlinlinW/CPSC436V/blob/main/final_project/legend.png?raw=true)
 - **Choropleth map, Donut chart, Pie chart**\
-![composite](readmeImgs\composite.png?raw=true)
+![composite](https://github.com/LinlinlinlinW/CPSC436V/blob/main/final_project/composite.png?raw=true)
 - **Line chart**\
-![linechart](readmeImgs\linechart.png?raw=true)
+![linechart](https://github.com/LinlinlinlinW/CPSC436V/blob/main/final_project/linechart.png?raw=true)
 - **Bar chart**\
-![barchart](readmeImgs\barchart.png?raw=true)
+![barchart](https://github.com/LinlinlinlinW/CPSC436V/blob/main/final_project/barchart.png?raw=true)
 
 ## Other link
 
