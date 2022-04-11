@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crime in Vancouver</title>
+    <link rel="icon" href="pigeon.ico" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style-night.css">
+</head>
+<body>
+    <h1>Crime in Vancouver</h1>
+    <div id="vis">
+        <div id="vis-upper">
+            <div id="upper-left">
+                <p id="intro_text"></p>
+            </div>
+            <div id="upper-right">
+                <svg id="linechart"></svg>
+            </div>
+            
+        </div>
+
+        <div id="vis-bottom">
+            <div> 
+                <svg id="compositeMap"></svg>
+            </div>
+            <div>
+              <svg id="barchart-general"></svg>  
+              <svg id="barchart-detail"></svg>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- tooltip: has to be put directly under the body tag -->
+
+    <div id="crime-title"></div>
+    <div id="tooltip-map"></div>
+    <div id="subcrime-tooltip"></div>
+    <div id="line-chart-tooltip"></div>
+
+    <script src="js/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script src="js/main.js"></script>
+    <script src="js/compositeMap.js"></script>
+    <script src="js/choroplethMap.js"></script>
+    <script src="js/choroplethLegend.js"></script>
+    <script src="js/barchart.js"></script>
+    <script src="js/linechart.js"></script>
+</body>
+</html>

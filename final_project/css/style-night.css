@@ -1,0 +1,156 @@
+:root {
+  /** day **/
+  --day-background: rgb(232, 232, 232);
+  /** nighttime **/
+  --night-background: #15202b;
+
+  /** general **/
+  --white: #fff;
+  --crime-0: #ff01f2;
+  --crime-1: #6a2bfc; 
+  --crime-2: #fd8012;
+  --crime-3: #03b200;
+  --crime-4: #84ff00;
+  --crime-5: #b804ff;
+  --crime-6: #ff968f;
+  --crime-7: #00b1b7;
+  --crime-8: #f6acac;
+  --crime-9: #ff13cc;
+  --crime-10: #5c74ff;
+
+  --crime-theft: #0059ff;
+  --crime-mischief: #84ff00;
+  --crime-bae: #ff4646;
+  --crime-vc: #c8ba00;
+}
+
+#crime-theft-linechart.night,
+#crime-theft.night {
+  fill: var(--crime-theft);
+}
+
+#crime-mischief-linechart.night,
+#crime-mischief.night {
+  fill: var(--crime-mischief);
+}
+
+#crime-bae-linechart.night,
+#crime-bae.night {
+  fill: var(--crime-bae);
+}
+
+#crime-vc-linechart.night,
+#crime-vc.night {
+  fill: var(--crime-vc);
+}
+
+body.night {
+  background-color: var(--night-background);
+  font-family: "IBM Plex Mono", monospace;
+  transition: 0.4s;
+}
+
+#slider-range.night {
+  fill: #749dd6;
+}
+
+.crimePie.night:hover,
+.subcrime.night:hover,
+.crime.night:hover {
+  stroke: rgb(173, 168, 198);
+  stroke-width: 3px;
+  transition: 0.3s;
+}
+
+.crimePie.night.selected,
+.subcrime.night.selected,
+.crime.night.selected {
+  opacity: 1;
+  stroke: rgb(173, 168, 198);
+  stroke-width: 3px;
+  transition: 0.3s;
+}
+
+#crime-title.night {
+  color: var(--white);
+}
+.x-axis-label.night {
+  fill: var(--white);
+}
+.y-axis-label.night {
+  fill: var(--white);
+}
+h1.night {
+  color: var(--white);
+}
+
+.legend-title.night {
+  fill: var(--white);
+}
+
+.legend-label.night {
+  fill: var(--white);
+}
+
+#year-bar.night {
+  color: var(--white);
+}
+
+#intro_text.night {
+  color: var(--white);
+}
+
+#crime-0.night,
+#neighbor-crime-0.night {
+  fill: var(--crime-0);
+}
+#crime-1.night,
+#neighbor-crime-1.night {
+  fill: var(--crime-1);
+}
+#crime-2.night,
+#neighbor-crime-2.night {
+  fill: var(--crime-2);
+}
+#crime-3.night,
+#neighbor-crime-3.night {
+  fill: var(--crime-3);
+}
+#crime-4.night,
+#neighbor-crime-4.night {
+  fill: var(--crime-4);
+}
+#crime-5.night,
+#neighbor-crime-5.night {
+  fill: var(--crime-5);
+}
+#crime-6.night,
+#neighbor-crime-6.night {
+  fill: var(--crime-6);
+}
+#crime-7.night,
+#neighbor-crime-7.night {
+  fill: var(--crime-7);
+}
+#crime-8.night,
+#neighbor-crime-8.night {
+  fill: var(--crime-8);
+}
+#crime-9.night,
+#neighbor-crime-9.night {
+  fill: var(--crime-9);
+}
+#crime-10.night,
+#neighbor-crime-10.night {
+  fill: var(--crime-10);
+}
+
+.barchart-title.night {
+  fill: var(--white);
+}
+.percentage.night {
+  fill: var(--white);
+}
+.linechart-title.night {
+  fill: var(--white);
+}
