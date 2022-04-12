@@ -6,7 +6,7 @@ class MapLegend {
 			containerHeight: _config.containerHeight || 150,
 			legendBottom: 50,
 			legendLeft: 50,
-			legendRectHeight: 12, 
+			legendRectHeight: 12,
 			legendRectWidth: 150,
 			nightMode: _config.nightMode || false,
 			crimeColorScale: _config.crimeColor || ['#E4E2E2', '#1B1B1B'],
@@ -30,22 +30,22 @@ class MapLegend {
 	initVis() {
 		let vis = this;
 		vis.svg = d3.select(vis.config.parentElement).append('svg')
-          .attr('width', vis.config.containerWidth)
-          .attr('height', vis.config.containerHeight)
-          .attr('x', '68%')
-          .attr('y', '0%')
+			.attr('width', vis.config.containerWidth)
+			.attr('height', vis.config.containerHeight)
+			.attr('x', '68%')
+			.attr('y', '0%')
 
 		vis.chart = vis.svg.append('g')
 		// Initialize gradient for the legend
 		vis.linearGradient = vis.svg.append('defs').append('linearGradient')
-		.attr("id", "legend-gradient")
-		.attr('transform', `translate(100,30)`);
+			.attr("id", "legend-gradient")
+			.attr('transform', `translate(100,30)`);
 
 		// Append legend
 		vis.legend = vis.chart.append('g')
 			.attr('class', 'legend')
 			.attr('transform', `translate(20,30)`);
-		
+
 		vis.legendRect = vis.legend.append('rect')
 			.attr('width', vis.config.legendRectWidth)
 			.attr('height', vis.config.legendRectHeight);
@@ -57,7 +57,7 @@ class MapLegend {
 			.attr('font-size', 12)
 			.text('Severity level of total number of crimes')
 
-        this.updateVis();
+		this.updateVis();
 	}
 
 	/**
@@ -66,20 +66,19 @@ class MapLegend {
 	updateVis() {
 		let vis = this;
 		let crimeColor
-		if(vis.config.nightMode) {
-			if(vis.config.crime) {
+		if (vis.config.nightMode) {
+			if (vis.config.crime) {
 				let colorVariable = vis.indexMap[vis.config.crime] === undefined ? `--crime-${vis.generalCirmeMap[vis.config.crime]}` : `--crime-${vis.indexMap[vis.config.crime]}`
 				let colorCSS = getComputedStyle(document.documentElement).getPropertyValue(colorVariable)
 				crimeColor = colorCSS
-			} else crimeColor = 'grey'
-		} else crimeColor = vis.config.crime ? vis.generalColorMap[vis.config.crime] : '#1B1B1B'
-		
-      	let crimeColorRange = ['#ffffff00', crimeColor]
+			} else crimeColor = 'white'
+		} else { crimeColor = vis.config.crime ? vis.generalColorMap[vis.config.crime] : '#1B1B1B' }
+		let crimeColorRange = ['#ffffff00', crimeColor]
 		// Define begin and end of the color luminance
 		vis.legendRanges = [
-			{ color: crimeColorRange[0], value: vis.config.crimeNumberExtent[0], offset: 0},
-			{ color: crimeColorRange[1], value: vis.config.crimeNumberExtent[1], offset: 100},
-		  ];
+			{ color: crimeColorRange[0], value: vis.config.crimeNumberExtent[0], offset: 0 },
+			{ color: crimeColorRange[1], value: vis.config.crimeNumberExtent[1], offset: 100 },
+		];
 
 		vis.renderVis();
 	}
@@ -90,24 +89,25 @@ class MapLegend {
 	renderVis() {
 		let vis = this;
 
+		vis.legendRect.attr("stroke", "grey").attr("stroke-width", 2);
 		// Add legend labels
 		vis.legend.selectAll('.legend-label')
 			.data(vis.legendRanges)
-		  .join('text')
+			.join('text')
 			.attr('class', 'legend-label')
 			.attr('text-anchor', 'middle')
 			.classed('night', vis.config.nightMode)
 			.attr('dy', '.35em')
 			.attr('y', 20)
-			.attr('x', (d,index) => {
-			  return index == 0 ? 0 : vis.config.legendRectWidth;
+			.attr('x', (d, index) => {
+				return index == 0 ? 0 : vis.config.legendRectWidth;
 			})
 			.text(d => d.value);
 
 		// Update gradient for legend
 		vis.linearGradient.selectAll('stop')
 			.data(vis.legendRanges)
-		.join('stop')
+			.join('stop')
 			.attr('offset', d => d.offset)
 			.attr('stop-color', d => d.color);
 		vis.legendRect.attr('fill', 'url(#legend-gradient)');

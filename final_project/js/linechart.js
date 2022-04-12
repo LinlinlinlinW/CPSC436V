@@ -4,7 +4,7 @@ class Linechart {
       parentElement: _config.parentElement,
       containerWidth: _config.containerWidth || 700,
       containerHeight: _config.containerHeight || 300,
-      margin: _config.margin || { top: 30, right: 20, bottom: 20, left: 40 },
+      margin: _config.margin || { top: 50, right: 20, bottom: 20, left: 40 },
       yearRange: _config.yearRange || [2017, 2021],
       crime: _config.crime || null,
       nightMode: _config.nightMode || false,
@@ -103,7 +103,7 @@ class Linechart {
     // Initialize trackingArea
     vis.trackingArea = vis.chart
       .append("rect")
-      .attr("width", vis.width - 20)
+      .attr("width", vis.width - 10)
       .attr("height", vis.height)
       .attr("fill", "none")
       .attr("pointer-events", "all");
@@ -140,7 +140,6 @@ class Linechart {
     // group by Month
     vis.groupByMonthData = [];
     let crimePerMonth = [];
-
     // domain
     vis.xScale.domain([
       new Date(vis.config.yearRange[0] - 1, 11, 31),
@@ -155,7 +154,17 @@ class Linechart {
       .line()
       .x((d) => vis.xScale(vis.xValue(d)))
       .y((d) => vis.yScale(vis.yValue(d)));
-
+    const dayRange = [];
+    for (
+      let i = vis.config.yearRange[0];
+      i < vis.config.yearRange[vis.config.yearRange.length - 1] + 1;
+      i++
+    ) {
+      for (let j = 1; j < 13; j++) {
+        const date = i + "-" + ("0" + j).slice(-2) + "-" + ("0" + 1).slice(-2);
+        dayRange.push(date);
+      }
+    }
     // filter data by year and neighborhood
     if (hasNeibourhood) {
       // with crime
@@ -186,6 +195,7 @@ class Linechart {
       // filter data
       let yearData = vis.data.filter(vis.filterYearValue);
 
+
       // count monthly # of crimes based on each neighborhood
       vis.filteredData = d3.rollups(
         yearData,
@@ -194,31 +204,85 @@ class Linechart {
         (d) => d.YEAR,
         (d) => d.MONTH
       );
-
-      // Group data i.e. [["point grey", [...]], ["downtown", [...]], ...]
-      let groupData = [];
-      vis.filteredData.forEach((neighborhood) => {
-        let monthArr = [neighborhood[0], []];
-        neighborhood[1].forEach((year) => {
-          year[1].forEach((month) => {
-            let date = new Date(year[0], month[0] - 1, 1);
-            monthArr[1].push([date, month[1]]);
-            crimePerMonth.push(month[1]);
+      
+      // check whether return empty or not
+      if (vis.filteredData.length === 0) {
+        vis.config.neibourhood.forEach((neighbor) => {
+          vis.filteredData.push([neighbor, []]);
+        });
+        vis.filteredData.forEach((neighbor) => {
+          dayRange.forEach((date) => {
+            const currDate = date.split("-");
+            const year = currDate[0];
+            const month = +currDate[1] - 1;
+            neighbor[1].push([new Date(year, month, 1), 0]);
           });
         });
-        groupData.push(monthArr);
-      });
-
-      // Sort by date
-      groupData.forEach((neibourhood) => {
-        neibourhood[1].sort(function sortByDateAscending(a, b) {
-          // Dates will be cast to numbers automagically:
-          return a[0] - b[0];
+        vis.groupByMonthData = vis.filteredData;
+      } 
+      // not empty
+      else {
+        // Group data i.e. [["point grey", [...]], ["downtown", [...]], ...]
+        let groupData = [];
+        vis.filteredData.forEach((neighborhood) => {
+          let monthArr = [neighborhood[0], []];
+          neighborhood[1].forEach((year) => {
+            year[1].forEach((month) => {
+              let date = new Date(year[0], month[0] - 1, 1);
+              monthArr[1].push([date, month[1]]);
+              crimePerMonth.push(month[1]);
+            });
+          });
+          groupData.push(monthArr);
         });
-      });
+        //append zero if no crimes in that month
+        groupData.forEach((neibourhood) => {
+          let currDates = [];
+          neibourhood[1].forEach((month) =>
+            currDates.push(
+              month[0].getFullYear() +
+                "-" +
+                ("0" + (month[0].getMonth() + 1)).slice(-2) +
+                "-" +
+                ("0" + month[0].getDate()).slice(-2)
+            )
+          );
+          dayRange.forEach((date) => {
+            const currDate = date.split("-");
+            const year = currDate[0];
+            const month = +currDate[1] - 1;
+            if (!currDates.includes(date)) {
+              neibourhood[1].push([new Date(year, month, 1), 0]);
+            }
+          });
+        });
 
-      vis.yScale.domain([0, d3.max(crimePerMonth) + 10]);
-      vis.groupByMonthData = groupData;
+        // Sort by date
+        groupData.forEach((neibourhood) => {
+          neibourhood[1].sort(function sortByDateAscending(a, b) {
+            // Dates will be cast to numbers automagically:
+            return a[0] - b[0];
+          });
+        });
+
+        if (vis.filteredData.length < vis.config.neibourhood.length) {
+          const currNeighbor = vis.filteredData.map((d) => d[0]);
+          vis.config.neibourhood.forEach((neighbor) => {
+            if (!currNeighbor.includes(neighbor)) {
+              const mockData = [];
+              dayRange.forEach((date) => {
+                const currDate = date.split("-");
+                const year = currDate[0];
+                const month = +currDate[1] - 1;
+                mockData.push([new Date(year, month, 1), 0]);
+              });
+              groupData.push([neighbor, mockData]);
+            }
+          });
+        }
+        vis.yScale.domain([0, d3.max(crimePerMonth) + 10]);
+        vis.groupByMonthData = groupData;
+      }
     } else {
       let groupData = ["Vancouver", []];
       // without neighborhood
@@ -251,7 +315,7 @@ class Linechart {
         (d) => d.MONTH
       );
 
-      //Group data i.e. [["Vancouver", [...]]]
+      //Group data i.e. ["Vancouver", [...]]
       vis.filteredData.forEach((year) =>
         year[1].forEach((month) => {
           let date = new Date(year[0], month[0] - 1, 1);
@@ -260,12 +324,30 @@ class Linechart {
         })
       );
 
+      //append zero if no crimes in that month
+      let currDates = [];
+      groupData[1].forEach((neibourhood) => {
+        currDates.push(
+          neibourhood[0].getFullYear() +
+            "-" +
+            ("0" + (neibourhood[0].getMonth() + 1)).slice(-2) +
+            "-" +
+            ("0" + neibourhood[0].getDate()).slice(-2)
+        );
+      });
+      dayRange.forEach((date) => {
+        const currDate = date.split("-");
+        const year = currDate[0];
+        const month = +currDate[1] - 1;
+        if (!currDates.includes(date)) {
+          groupData[1].push([new Date(year, month, 1), 0]);
+        }
+      });
       // sort data by month
       groupData[1].sort(function sortByDateAscending(a, b) {
         // Dates will be cast to numbers automagically:
         return a[0] - b[0];
       });
-
       vis.groupByMonthData.push(groupData);
       vis.yScale.domain([0, d3.max(crimePerMonth) + 10]);
     }
@@ -331,7 +413,7 @@ class Linechart {
       .attr("class", "line-label")
       .attr("x", 50)
       .attr("y", (d, i) => vis.yPositionScale(i))
-      .attr("font-size", 15)
+      .attr("font-size", 12)
       .attr("opacity", 0.5)
       .attr("fill", (d, i) => {
         if (vis.config.nightMode) {
@@ -367,7 +449,7 @@ class Linechart {
           return "neighbor-crime-" + vis.indexMap[d];
         }
       })
-      .attr("x", 290)
+      .attr("x", 272)
       .attr("y", -10)
       .text((d) => d);
 
@@ -382,7 +464,18 @@ class Linechart {
       .on("mousemove", (event, d, i) => {
         // get date from the tracking area
         let date = vis.xScale.invert(d3.pointer(event, this.svg.node())[0]);
-        date.setMonth(date.getMonth() - 4);
+        if (
+          vis.config.yearRange[1] - vis.config.yearRange[0] === 1 ||
+          vis.config.yearRange.length === 1
+        ) {
+          date.setMonth(date.getMonth() - 1);
+        } else if (vis.config.yearRange[1] - vis.config.yearRange[0] === 2) {
+          date.setMonth(date.getMonth() - 2);
+        } else if (vis.config.yearRange[1] - vis.config.yearRange[0] === 3) {
+          date.setMonth(date.getMonth() - 3);
+        } else if (vis.config.yearRange[1] - vis.config.yearRange[0] === 4) {
+          date.setMonth(date.getMonth() - 4);
+        }
         vis.bisectDate = d3.bisector((d) => d[0]).right;
         const originalData = [];
         for (let neighbor of vis.groupByMonthData) {
@@ -395,15 +488,6 @@ class Linechart {
             originalData.push(a);
           } else {
             let preciseData = b[0] && date - a[0] > b[0] - date ? b : a;
-            if (originalData.length !== 0) {
-              const firstDate = originalData[0][0];
-              const month = firstDate.getMonth();
-              const year = firstDate.getFullYear();
-              if (+preciseData[0].getTime() !== +firstDate.getTime()) {
-                preciseData[0].setMonth(month);
-                preciseData[0].setFullYear(year);
-              }
-            }
             originalData.push(preciseData);
           }
         }
@@ -456,6 +540,7 @@ class Linechart {
           .attr("dx", (d) =>
             vis.xScale(vis.xValue(d)) > vis.width - vis.width / 6 ? -10 : 10
           )
+          .attr("dy", -5)
           .attr("alignment-baseline", "middle")
           .attr("font-size", 12)
           .attr("fill", (d) => {

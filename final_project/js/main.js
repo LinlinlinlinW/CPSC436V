@@ -2,31 +2,36 @@
 let data;
 let allCrimes = [];
 let selectedNeibourhoods = [];
-let compositeMap, barChart, lineChart, choroplethMap, choroplethLegend, barChartGeneral;
+let compositeMap,
+  barChart,
+  lineChart,
+  choroplethMap,
+  choroplethLegend,
+  barChartGeneral;
 
 const generalColorMap = {
-  'Theft': '#8bc9b4', 
-  'Mischief': '#b15bd9', 
-  'Break and Enter': '#e86f6f', 
-  'Vehicle Collision or Pedestrian Struck': '#f27cc5'
+  "Theft": "#6FA090",
+  "Mischief": "#b15bd9",
+  "Break and Enter": "#e86f6f",
+  "Vehicle Collision or Pedestrian Struck": "#d70085",
 };
 
 const colorMap = {
-  "Theft from Vehicle": "#98abc5",
-  "Theft of Bicycle": "#8a89a6",
-  "Theft of Vehicle": "#faab19",
-  "Other Theft": "#d58578",
+  "Theft from Vehicle": "#6783a9",
+  "Theft of Bicycle": "#d9270f",
+  "Theft of Vehicle": "#ff988c",
+  "Other Theft": "#5fa8d3",
   "Mischief": "#b15bd9",
   "Break and Enter Commercial": "#6844db",
-  "Break and Enter Residential/Other": "#ad0505",
+  "Break and Enter Residential/Other": "#e69138",
   "Vehicle Collision or Pedestrian Struck (with Fatality)": "#8b7d9f",
-  "Vehicle Collision or Pedestrian Struck (with Injury)": "#0f7185"
+  "Vehicle Collision or Pedestrian Struck (with Injury)": "#0f7185",
 };
 
 const indexMap = {
   "Theft from Vehicle": 0,
   "Theft of Bicycle": 1,
-  "Theft of Vehicle": 2,  
+  "Theft of Vehicle": 2,
   "Other Theft": 3,
   "Mischief": 4,
   "Break and Enter Residential/Other": 5,
@@ -39,10 +44,10 @@ let data_day = [];
 let data_night = [];
 let data_used = data_day;
 let filteredCrime = {
-  'Theft': 0,
-  'Mischief': 0,
-  'Break and Enter': 0,
-  'Vehicle Collision or Pedestrian Struck': 0
+  "Theft": 0,
+  "Mischief": 0,
+  "Break and Enter": 0,
+  "Vehicle Collision or Pedestrian Struck": 0,
 };
 let isSliderMoved = false;
 let isToggleMoved = false;
@@ -76,7 +81,12 @@ let multiElements = [
 ];
 
 // initialize dispatcher that is used to orchestrate events
-const dispatcher = d3.dispatch("getYear", "getCrime", "filterByNeibourhood", "updateChoroplethLegend");
+const dispatcher = d3.dispatch(
+  "getYear",
+  "getCrime",
+  "filterByNeibourhood",
+  "updateChoroplethLegend"
+);
 
 /**
  * Load GeoJSON data of the Vancouver area and the data of the crimes within each neibourhood
@@ -95,7 +105,8 @@ Promise.all([
     geoData.features.forEach((d) => {
       for (let i = 0; i < neibourhoodData.length; i++) {
         if (d.properties.NAME == neibourhoodData[i].NEIGHBOURHOOD) {
-          d.properties.NumPerNeighbourhood_all_yrs = +neibourhoodData[i].NumPerNeighbourhood_all_yrs;
+          d.properties.NumPerNeighbourhood_all_yrs =
+            +neibourhoodData[i].NumPerNeighbourhood_all_yrs;
           d.properties[2017] = +neibourhoodData[i].NumPerNeighbourhood_2017;
           d.properties[2018] = +neibourhoodData[i].NumPerNeighbourhood_2018;
           d.properties[2019] = +neibourhoodData[i].NumPerNeighbourhood_2019;
@@ -103,9 +114,8 @@ Promise.all([
           d.properties[2021] = +neibourhoodData[i].NumPerNeighbourhood_2021;
         }
       }
-  });
+    });
 
-    let palette_index = 0;
     neibourhoodData.forEach((d) => {
       Object.keys(d).forEach((attr) => {
         d.DATE =
@@ -131,7 +141,8 @@ Promise.all([
         ) {
           d[attr] = +d[attr];
         }
-      });
+      }
+      );
 
       // filtered the data by daytime and nighttime
       if (d.TIME === "day") {
@@ -146,16 +157,24 @@ Promise.all([
       }
     });
 
-
     /* handle data */
     // extract min and max year
     default_minYear = d3.min(neibourhoodData.map((d) => d.YEAR));
     default_maxYear = d3.max(neibourhoodData.map((d) => d.YEAR));
-    
-    filterCrimes(data_used)
+
+    filterCrimes(data_used);
 
     // show the legend
     this.showLegend();
+
+    choroplethLegend = new MapLegend(
+      {
+        parentElement: "#compositeMap",
+      },
+      colorMap,
+      generalColorMap,
+      indexMap
+    );
 
     choroplethMap = new ChoroplethMap(
       {
@@ -182,15 +201,6 @@ Promise.all([
       indexMap
     );
 
-    choroplethLegend = new MapLegend(
-      {
-        parentElement: "#compositeMap",
-      },
-      colorMap,
-      generalColorMap,
-      indexMap
-    );
-
     barChart = new Barchart(
       {
         parentElement: "#barchart-detail",
@@ -201,7 +211,7 @@ Promise.all([
       generalColorMap,
       true
     );
-    
+
     barChartGeneral = new Barchart(
       {
         parentElement: "#barchart-general",
@@ -222,13 +232,11 @@ Promise.all([
       indexMap,
       generalColorMap
     );
-
   })
   .catch((error) => console.error(error));
 
 function showLegend() {
-  let dayNightSpan = 
-    `<span class="toggleWrapper"> 
+  let dayNightSpan = `<span class="toggleWrapper"> 
         <input type="checkbox" class="dn" id="dn"/> 
         <label for="dn" class="toggle"> 
         <span class="toggle__handler"> 
@@ -241,12 +249,11 @@ function showLegend() {
       <script>
         $("#dn").prop("checked", isToggleMoved);
       </script>
-    `
-    
-  let yearBarText = 
-  `<p id="year-bar"> 
-    Adjust the slider <span id="slider-range"></span>, you are currently looking at the data
-    <p id="value-range"></p>
+    `;
+
+  let yearBarText = `<p id="year-bar"> 
+    Adjust the slider <span id="slider-range"></span>,<br>you are currently looking at the data
+    <p id="value-range"></p>.
   </p>
   <script> 
     if (!isSliderMoved) {
@@ -290,21 +297,21 @@ function showLegend() {
       .attr("transform", "translate(20, 10)")
       .call(this.sliderRange);
   </script>
-  `
+  `;
 
   let text =
-  '<p>Crime in Vancouver helps you to identify composition of crime in different neighbourhoods in Vancouver.</p>' + 
-  '<p>Currently you are seeing the cases happened in' + dayNightSpan + '</p>' 
-  + yearBarText  + 
-  `<p id="nei_text">You can select <b>3</b> neighbourhoods at most.<br><br> Select a neighborhood in the map to see the details.</p>`+ 
-  `<p id="crime_text">Select a crime type in the donut chart or pie chart to see the details.</p>`;
+    "<p>Crime in Vancouver helps you to identify composition of crime in different neighbourhoods in Vancouver.</p>" +
+    "<p>Currently you are seeing the cases happened in" + dayNightSpan + "</p>" +
+    yearBarText +
+    `<p id="nei_text">You can select <b>3</b> neighbourhoods at most.<br><br> Select a neighborhood in the map to see the details.</p>` +
+    `<p>Zoom in the choropleth map to see the crime distribution.</p>` + 
+    `<p id="crime_text">Select a crime type in the donut chart or pie chart to see the details.</p>`;
 
-  $('#intro_text').html(
-    `${text}`);
-    
-  $('#dn').bind("click", (event) => {
+  $("#intro_text").html(`${text}`);
+
+  $("#dn").bind("click", (event) => {
     this.updateDayNightEffect(event);
-  })
+  });
 }
 
 function updateYearBar(value) {
@@ -318,22 +325,21 @@ function updateYearBar(value) {
     d3.select("#value-range").text("in " + d3.format("d")(default_minYear));
 
     // change the first text label to be invisible
-    d3.select("g.parameter-value")
-      .select("text")
-      .attr("visibility", "hidden");
+    d3.select("g.parameter-value").select("text").attr("visibility", "hidden");
 
     // change the second text label's position
     d3.selectAll("g.parameter-value")._groups[
       "0"
     ][1].childNodes[1].style.transform = "translate(0,0)";
-  } 
-  else {
+  } else {
     years = [default_minYear, default_maxYear];
-    d3.select("#value-range").text("from " + value.map(d3.format("d")).join(" - "));
+    d3.select("#value-range").text(
+      "from " + value.map(d3.format("d")).join(" - ")
+    );
     d3.select("g.parameter-value").select("text").attr("visibility", "");
   }
 
-  dispatcher.call('getYear', null, years);
+  dispatcher.call("getYear", null, years);
 }
 
 function updateDayNightEffect(event) {
@@ -341,12 +347,10 @@ function updateDayNightEffect(event) {
   if (checked) {
     data_used = data_night;
     isToggleMoved = true;
-  }
-  else {
+  } else {
     data_used = data_day;
     isToggleMoved = false;
   }
-  
 
   /* linechart */
   lineChart.data = data_used;
@@ -367,20 +371,20 @@ function updateDayNightEffect(event) {
   choroplethMap.updateVis();
 
   choroplethLegend.config.nightMode = checked;
-  choroplethLegend.updateVis()
+  choroplethLegend.updateVis();
 
   /* composite map*/
   compositeMap.data = data_used;
   compositeMap.config.nightMode = checked;
   filteredCrime = {
-    'Theft': 0,
-    'Mischief': 0,
-    'Break and Enter': 0,
-    'Vehicle Collision or Pedestrian Struck': 0
+    "Theft": 0,
+    "Mischief": 0,
+    "Break and Enter": 0,
+    "Vehicle Collision or Pedestrian Struck": 0,
   };
-  filterCrimes(data_used)
+  filterCrimes(data_used);
 
-  compositeMap.filteredCrime = filteredCrime
+  compositeMap.filteredCrime = filteredCrime;
   compositeMap.updateVis();
 
   singleElement.forEach((element) =>
@@ -392,55 +396,55 @@ function updateDayNightEffect(event) {
 }
 
 /* dispatchers */
-dispatcher.on('getYear', yearRange => {
-	if (yearRange !== undefined) {
-		compositeMap.config.yearRange = yearRange;
-		lineChart.config.yearRange = yearRange;
-		barChart.config.yearRange = yearRange;
+dispatcher.on("getYear", (yearRange) => {
+  if (yearRange !== undefined) {
+    compositeMap.config.yearRange = yearRange;
+    lineChart.config.yearRange = yearRange;
+    barChart.config.yearRange = yearRange;
     choroplethMap.config.yearRange = yearRange;
-	}
-	compositeMap.updateVis();
-	lineChart.updateVis();
-	barChart.updateVis();
+  }
+  compositeMap.updateVis();
+  lineChart.updateVis();
+  barChart.updateVis();
   choroplethMap.updateVis();
-})
+});
 
-dispatcher.on('getCrime', crime => {
+dispatcher.on("getCrime", (crime) => {
   let updatedCrimeText;
-	if (crime !== "" && crime !== undefined) {
-		lineChart.config.crime = crime;
+  if (crime !== "" && crime !== undefined) {
+    lineChart.config.crime = crime;
     barChart.config.crime = crime;
     barChartGeneral.config.crime = crime;
     choroplethMap.config.crime = crime;
     choroplethLegend.config.crime = crime;
 
-    updatedCrimeText = 'The crime you are selecting is <b>' + crime + '</b>.';
-	}
-  else {
+    updatedCrimeText = "The crime you are selecting is <b>" + crime + "</b>.";
+  } else {
     let emptyCrime = "";
     lineChart.config.crime = null;
     barChart.config.crime = emptyCrime;
-    barChartGeneral.config.crime = emptyCrime; 
-    choroplethMap.config.crime = emptyCrime;
+    barChartGeneral.config.crime = emptyCrime;
+    choroplethMap.config.crime = null;
     choroplethLegend.config.crime = emptyCrime;
-    updatedCrimeText = 'You can select a crime type in the donut chart or pie chart to see the details.'
+    updatedCrimeText =
+      "You can select a crime type in the donut chart or pie chart to see the details.";
   }
-	lineChart.updateVis();
+  lineChart.updateVis();
   barChart.updateVis();
   barChartGeneral.updateGeneralVis();
   choroplethMap.updateVis();
   choroplethLegend.updateVis();
 
-  $('#crime_text').html(updatedCrimeText)
+  $("#crime_text").html(updatedCrimeText);
 });
 
-dispatcher.on('updateChoroplethLegend', range => {
-  let crimeColorScale = range[0]
-  let crimeNumberExtent = range[1]
-  choroplethLegend.config.crimeColorScale = crimeColorScale
-  choroplethLegend.config.crimeNumberExtent = crimeNumberExtent
-  choroplethLegend.updateVis()
-})
+dispatcher.on("updateChoroplethLegend", (range) => {
+  let crimeColorScale = range[0];
+  let crimeNumberExtent = range[1];
+  choroplethLegend.config.crimeColorScale = crimeColorScale;
+  choroplethLegend.config.crimeNumberExtent = crimeNumberExtent;
+  choroplethLegend.updateVis();
+});
 
 dispatcher.on("filterByNeibourhood", (selections) => {
   let aNeibourhood = selections;
@@ -461,9 +465,7 @@ dispatcher.on("filterByNeibourhood", (selections) => {
       : null;
   // donutChart.config.neibourhoods = selectedNeibourhoods
   lineChart.config.neibourhood =
-    selectedNeibourhoods.length > 0
-      ? selectedNeibourhoods
-      : null;
+    selectedNeibourhoods.length > 0 ? selectedNeibourhoods : null;
 
   choroplethMap.updateVis();
   barChart.updateVis();
@@ -473,39 +475,42 @@ dispatcher.on("filterByNeibourhood", (selections) => {
 
   let updatedNeiborText;
   if (selectedNeibourhoods.length !== 0) {
-    updatedNeiborText = `The neighbourhoods you are selecting are <br><br> <b>` + selectedNeibourhoods + `</b>.
-    You can select <b>` + (3 - selectedNeibourhoods.length) + `</b> more.`;
-  }
-  else {
+    updatedNeiborText =
+      `The neighbourhoods you are selecting are <br><br> <b>` +
+      selectedNeibourhoods +
+      `</b>.
+    You can select <b>` +
+      (3 - selectedNeibourhoods.length) +
+      `</b> more.`;
+  } else {
     updatedNeiborText = `You can select <b>3</b> neighbourhoods at most.<br><br>
     Select a neighborhood in the map to see the details.`;
   }
-  $('#nei_text').html(updatedNeiborText);
+  $("#nei_text").html(updatedNeiborText);
 });
 
 // get general crime types and construct filteredCrime
 function filterCrimes(data) {
   // 1. filter crimes by year
-  data.forEach(d => {
+  data.forEach((d) => {
     if (d.YEAR >= default_minYear && d.YEAR <= default_maxYear) {
-
       // 2. filter crimes into 4 general types
-      if (d.TYPE.includes('Theft')) {
-        let currVal = filteredCrime['Theft']
-        filteredCrime['Theft'] = currVal + 1
+      if (d.TYPE.includes("Theft")) {
+        let currVal = filteredCrime["Theft"];
+        filteredCrime["Theft"] = currVal + 1;
       }
-      if (d.TYPE.includes('Mischief')) {
-        let currVal = filteredCrime['Mischief']
-        filteredCrime['Mischief'] = currVal + 1
+      if (d.TYPE.includes("Mischief")) {
+        let currVal = filteredCrime["Mischief"];
+        filteredCrime["Mischief"] = currVal + 1;
       }
-      if (d.TYPE.includes('Break and Enter')) {
-        let currVal = filteredCrime['Break and Enter']
-        filteredCrime['Break and Enter'] = currVal + 1
+      if (d.TYPE.includes("Break and Enter")) {
+        let currVal = filteredCrime["Break and Enter"];
+        filteredCrime["Break and Enter"] = currVal + 1;
       }
-      if (d.TYPE.includes('Vehicle Collision or Pedestrian Struck')) {
-        let currVal = filteredCrime['Vehicle Collision or Pedestrian Struck']
-        filteredCrime['Vehicle Collision or Pedestrian Struck'] = currVal + 1
+      if (d.TYPE.includes("Vehicle Collision or Pedestrian Struck")) {
+        let currVal = filteredCrime["Vehicle Collision or Pedestrian Struck"];
+        filteredCrime["Vehicle Collision or Pedestrian Struck"] = currVal + 1;
       }
     }
-  })
+  });
 }

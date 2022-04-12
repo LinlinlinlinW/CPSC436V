@@ -7,10 +7,10 @@
   /** general **/
   --white: #fff;
   --crime-0: #ff01f2;
-  --crime-1: #6a2bfc; 
-  --crime-2: #fd8012;
+  --crime-1: #a898cc; 
+  --crime-2: #D2691E;
   --crime-3: #03b200;
-  --crime-4: #84ff00;
+  --crime-4: #66CDAA;
   --crime-5: #b804ff;
   --crime-6: #ff968f;
   --crime-7: #00b1b7;
@@ -18,10 +18,10 @@
   --crime-9: #ff13cc;
   --crime-10: #5c74ff;
 
-  --crime-theft: #0059ff;
-  --crime-mischief: #84ff00;
+  --crime-theft: #0000FF;
+  --crime-mischief: #66CDAA;
   --crime-bae: #ff4646;
-  --crime-vc: #c8ba00;
+  --crime-vc: #808000;
 }
 
 #crime-theft-linechart.night,
@@ -44,6 +44,13 @@
   fill: var(--crime-vc);
 }
 
+.crimePie.night,
+.subcrime.night,
+.crime.night {
+  opacity: 0.8;
+  transition: 0.3s;
+}
+
 body.night {
   background-color: var(--night-background);
   font-family: "IBM Plex Mono", monospace;
@@ -62,6 +69,7 @@ body.night {
   transition: 0.3s;
 }
 
+.pie.night.selected,
 .crimePie.night.selected,
 .subcrime.night.selected,
 .crime.night.selected {

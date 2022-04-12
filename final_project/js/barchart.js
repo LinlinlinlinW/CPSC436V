@@ -106,7 +106,7 @@ class Barchart {
       }
       const neighborData = vis.data.filter(vis.filterValue);
 
-      //group data by type
+      //group data by crime type
       vis.filteredData = d3.rollups(
         neighborData,
         (g) => g.length,

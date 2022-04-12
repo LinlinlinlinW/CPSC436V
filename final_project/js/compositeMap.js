@@ -77,10 +77,11 @@ class CompositeMap {
 			.attr("width", vis.pieWidth)
 			.attr("height", vis.pieHeight)
 			.attr('id', 'theftPie')
+			.attr('class', 'pie')
 			.attr("transform", () => {
 				return `translate(${vis.config.margin.left - 10} , 40)`;
 			})
-		
+
 		vis.theft_Pie_title = vis.theft_Pie_svg.append('text')
 			.attr("width", vis.pieWidth * 2)
 			.attr("height", vis.pieHeight * 2)
@@ -92,6 +93,7 @@ class CompositeMap {
 			.attr("width", vis.pieWidth)
 			.attr("height", vis.pieHeight)
 			.attr('id', 'mischiefPie')
+			.attr('class', 'pie')
 			.attr("transform", () => {
 				return `translate(${vis.config.margin.left - 10} , 180)`;
 			})
@@ -104,6 +106,7 @@ class CompositeMap {
 			.attr("width", vis.pieWidth)
 			.attr("height", vis.pieHeight)
 			.attr('id', 'baePie')
+			.attr('class', 'pie')
 			.attr("transform", () => {
 				return `translate(${vis.config.margin.left - 10} , 320)`;
 			})
@@ -116,6 +119,7 @@ class CompositeMap {
 			.attr("width", vis.pieWidth)
 			.attr("height", vis.pieHeight)
 			.attr('id', 'vcPie')
+			.attr('class', 'pie')
 			.attr("transform", () => {
 				return `translate(${vis.config.margin.left - 10} , 460)`;
 			})
@@ -549,7 +553,12 @@ class CompositeMap {
 			.data(vis.generalCrimes)
 			.join("text")
 			.attr("class", "crimeText")
-			.attr("font-size", "11px")
+			.attr("font-size", (d) => {
+				if (d.includes('COLL.')) {
+					return "10px";
+				}
+				return "11px";
+			})
 			.attr("fill", () => vis.config.nightMode ? 'white' : 'black')
 			.attr("x", 0)
 			.attr("dy", -10)
@@ -594,6 +603,7 @@ class CompositeMap {
 				let id = event.currentTarget.id
 				let name = data.label;
 				this.selectCrime(id, name);
+				this.typerEffect(0, name, id);
 			})
 			.on('mousemove', (event, d) => {
 				let gnrlType;
@@ -621,6 +631,17 @@ class CompositeMap {
 
 	renderPieChartVis() {
 		let vis = this;
+
+		vis.theft_Pie_svg.classed("night", vis.config.nightMode)
+		vis.mischief_Pie_svg.classed("night", vis.config.nightMode)
+		vis.bae_Pie_svg.classed("night", vis.config.nightMode)
+		vis.vc_Pie_svg.classed("night", vis.config.nightMode)
+
+		// fill in color based on nightMode
+		vis.theft_Pie_title.attr('fill', vis.config.nightMode ? 'white' : 'black');
+		vis.mischief_Pie_title.attr('fill', vis.config.nightMode ? 'white' : 'black');
+		vis.bae_Pie_title.attr('fill', vis.config.nightMode ? 'white' : 'black');
+		vis.vc_Pie_title.attr('fill', vis.config.nightMode ? 'white' : 'black');
 
 		/* draw pie charts */
 		vis.tPie = vis.theft_Pie_svg
@@ -768,12 +789,6 @@ class CompositeMap {
 				this.selectCrime(id, name);
 				this.typerEffect(0, name, id);
 			})
-		
-		// fill in color based on nightMode
-		vis.theft_Pie_title.attr('fill', vis.config.nightMode ? 'white' : 'black');
-		vis.mischief_Pie_title.attr('fill', vis.config.nightMode ? 'white' : 'black');
-		vis.bae_Pie_title.attr('fill', vis.config.nightMode ? 'white' : 'black');
-		vis.vc_Pie_title.attr('fill', vis.config.nightMode ? 'white' : 'black');
 	}
 
 	/**
@@ -789,9 +804,29 @@ class CompositeMap {
 		d3.selectAll('.crime.selected').classed('selected', false)
 		d3.selectAll('.crimePie.selected').classed('selected', false)
 		d3.selectAll('.subcrime.selected').classed('selected', false)
+		d3.selectAll('.pie.selected').classed('selected', false);
+		this.clearPieTitle();
 
 		// reverse the selection for current target
 		d3.selectAll('#' + id).classed('selected', !isSelected)
+
+		let currPieID = "";
+		if (id.includes("crime-theft")) {
+			currPieID = "theftPie";
+		}
+		else if (id.includes("crime-mischief")) {
+			currPieID = "mischiefPie";
+		}
+		else if (id.includes("crime-bae")) {
+			currPieID = "baePie";
+		}
+		else if (id.includes("crime-vc")) {
+			currPieID = "vcPie";
+		}
+
+		if (currPieID != "") {
+			d3.select('#' + currPieID).classed('selected', !isSelected)
+		}
 
 		// pass off crime type based on the status of current target
 		if (!isSelected) {
@@ -827,19 +862,7 @@ class CompositeMap {
 	typerEffect(i, text, eleID) {
 		let vis = this;
 
-		// if any pie chart title is not empty, clear it first
-		if (vis.theft_Pie_title.text() != "" ) {
-			vis.theft_Pie_title.text("");
-		}
-		if (vis.mischief_Pie_title.text() != "" ) {
-			vis.mischief_Pie_title.text("");
-		}
-		if (vis.bae_Pie_title.text() != "" ) {
-			vis.bae_Pie_title.text("");
-		}
-		if (vis.vc_Pie_title.text() != "" ) {
-			vis.vc_Pie_title.text("");
-		}
+		this.clearPieTitle();
 
 		// select current pie chart
 		let currElement;
@@ -861,10 +884,10 @@ class CompositeMap {
 			.style('display', 'block')
 			.attr('font-size', '11px')
 			.attr('display', 'inline')
-		
+
 		// show the title based on the element's selection
 		let isSelected = d3.select('#' + eleID).classed('selected')
-		
+
 		if (isSelected) {
 			if (text.length <= 20) {
 				this.simpleTyper(currElement, i, [text]);
@@ -882,7 +905,7 @@ class CompositeMap {
 
 	// helper function to typerEffection, do the actual animation
 	simpleTyper(element, i, text) {
-		element	
+		element
 			.transition()
 			.style("visibility", "visible")
 			.duration(1000 * text.length)
@@ -892,15 +915,15 @@ class CompositeMap {
 				return function (t) {
 					if (t < 1) {
 						this.textContent = newText.slice(0, Math.round(t * textLength)) + "|";
-					} 
+					}
 					else {
 						this.textContent = newText;
-					}	
+					}
 				};
 			});
-		i = (i + 1) % text.length;	
+		i = (i + 1) % text.length;
 	}
-	
+
 	// handle the case when the name is too long
 	complexTyper(element, i, text1, text2) {
 		let textPart1 = element
@@ -916,8 +939,25 @@ class CompositeMap {
 			.style("visibility", "hidden")
 		this.simpleTyper(textPart1, i, [text1]);
 
-		d3.timeout( () => {
+		d3.timeout(() => {
 			this.simpleTyper(textPart2, i, [text2]);
 		}, 1000 * [text1].length)
+	}
+
+	clearPieTitle() {
+		let vis = this;
+		// if any pie chart title is not empty, clear it first
+		if (vis.theft_Pie_title.text() != "") {
+			vis.theft_Pie_title.text("");
+		}
+		if (vis.mischief_Pie_title.text() != "") {
+			vis.mischief_Pie_title.text("");
+		}
+		if (vis.bae_Pie_title.text() != "") {
+			vis.bae_Pie_title.text("");
+		}
+		if (vis.vc_Pie_title.text() != "") {
+			vis.vc_Pie_title.text("");
+		}
 	}
 }
